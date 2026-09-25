@@ -42,6 +42,39 @@ class FakeChatModel:
         return self.answer
 
 
+def pytest_addoption(parser):
+    parser.addoption(
+        "--eval-cases",
+        default="smoke",
+        help="golden cases for the DeepEval suite: smoke (default), all, or ids like GS-001,GS-004",
+    )
+
+
+def ollama_or_skip(host: str, model: str | None = None):
+    """Return an Ollama client, or skip the test if the server (or the model) is not there."""
+    ollama = pytest.importorskip("ollama")
+    try:
+        client = ollama.Client(host=host)
+        available = {m.model for m in client.list().models}
+    except Exception:
+        pytest.skip(f"Ollama is not reachable at {host}")
+    if model and model not in available and f"{model}:latest" not in available:
+        pytest.skip(f"model {model} is not pulled (ollama pull {model})")
+    return client
+
+
+@pytest.fixture(scope="session")
+def real_bot():
+    """The real bot (Ollama + persistent index). Only for tests marked `llm`."""
+    from app.config import Settings
+
+    settings = Settings()
+    ollama_or_skip(settings.ollama_host, settings.llm_model)
+    from app.factory import build_bot
+
+    return build_bot(settings)
+
+
 @pytest.fixture(scope="session")
 def corpus_chunks() -> list[Chunk]:
     return load_corpus(CORPUS_DIR)

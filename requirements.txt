@@ -1,3 +1,4 @@
 ollama>=0.4
 chromadb>=1.0
 pytest>=8.0
+deepeval>=4.2,<5
