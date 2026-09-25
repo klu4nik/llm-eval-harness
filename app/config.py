@@ -41,3 +41,6 @@ class Settings:
     temperature: float = float(os.getenv("LLM_TEMPERATURE", "0"))
     seed: int = int(os.getenv("LLM_SEED", "42"))
     collection: str = os.getenv("INDEX_COLLECTION", "playwright_docs")
+    # Judge for DeepEval metrics. A different model family than the bot, to limit self-preference bias.
+    judge_model: str = os.getenv("JUDGE_MODEL", "qwen2.5:7b")
+    judge_host: str = os.getenv("JUDGE_HOST", os.getenv("OLLAMA_HOST", "http://localhost:11434"))
