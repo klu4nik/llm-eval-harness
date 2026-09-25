@@ -1,0 +1,125 @@
+{
+  "version": 1,
+  "corpus_commit": "afa6836a5119b38809dd7670a03c1e7b2c2632e9",
+  "cases": [
+    {
+      "id": "GS-001",
+      "category": "factual",
+      "question": "What checks does Playwright perform before clicking an element with locator.click()?",
+      "expected_answer": "Playwright waits until the locator resolves to exactly one element and that element is visible, stable (not animating), receives events (not obscured by other elements) and enabled. If the checks do not pass within the timeout, the action fails with TimeoutError.",
+      "must_mention": ["visible", "stable", "enabled"],
+      "expected_sources": [{"doc": "actionability", "section": "Introduction"}],
+      "should_refuse": false
+    },
+    {
+      "id": "GS-002",
+      "category": "factual",
+      "question": "What happens to alert, confirm and prompt dialogs if my test does not handle them?",
+      "expected_answer": "They are auto-dismissed by Playwright. If there is no listener for page.on(\"dialog\"), all dialogs are automatically dismissed.",
+      "must_mention": ["dismiss"],
+      "expected_sources": [{"doc": "dialogs", "section": "alert(), confirm(), prompt() dialogs"}],
+      "should_refuse": false
+    },
+    {
+      "id": "GS-003",
+      "category": "factual",
+      "question": "I registered page.on('dialog') that only prints dialog.message, and now my click hangs. Why?",
+      "expected_answer": "A page.on(\"dialog\") listener must handle the dialog by calling dialog.accept() or dialog.dismiss(). Dialogs are modal and block further page execution, so if the listener only prints the message, the action stalls.",
+      "must_mention": ["accept", "dismiss"],
+      "expected_sources": [{"doc": "dialogs", "section": "alert(), confirm(), prompt() dialogs"}],
+      "should_refuse": false
+    },
+    {
+      "id": "GS-004",
+      "category": "factual",
+      "question": "How can I skip the non-essential actionability checks when clicking an element?",
+      "expected_answer": "Pass the force option, for example locator.click(force=True). It disables non-essential actionability checks, e.g. it will not check that the element actually receives click events.",
+      "must_mention": ["force"],
+      "expected_sources": [{"doc": "actionability", "section": "Forcing actions"}],
+      "should_refuse": false
+    },
+    {
+      "id": "GS-005",
+      "category": "factual",
+      "question": "Which built-in locators does Playwright recommend?",
+      "expected_answer": "page.get_by_role, page.get_by_text, page.get_by_label, page.get_by_placeholder, page.get_by_alt_text, page.get_by_title and page.get_by_test_id.",
+      "must_mention": ["get_by_role", "get_by_label", "get_by_test_id"],
+      "expected_sources": [{"doc": "locators", "section": "Quick Guide"}],
+      "should_refuse": false
+    },
+    {
+      "id": "GS-006",
+      "category": "factual",
+      "question": "How do I save a logged-in state once and reuse it in a new browser context?",
+      "expected_answer": "Call context.storage_state(path=\"state.json\") on an authenticated context, then create a new context with browser.new_context(storage_state=\"state.json\"). Keep the state file out of the repository because it can contain sensitive cookies.",
+      "must_mention": ["storage_state"],
+      "expected_sources": [
+        {"doc": "auth", "section": "Reusing signed in state"},
+        {"doc": "auth", "section": "Core concepts"}
+      ],
+      "should_refuse": false
+    },
+    {
+      "id": "GS-007",
+      "category": "factual",
+      "question": "How do I wait for a file download triggered by a click and get the Download object?",
+      "expected_answer": "Wrap the action in page.expect_download(): with page.expect_download() as download_info: page.get_by_text(\"Download file\").click(); then download = download_info.value. Downloaded files are deleted when the browser context that produced them is closed.",
+      "must_mention": ["expect_download"],
+      "expected_sources": [{"doc": "downloads", "section": "Introduction"}],
+      "should_refuse": false
+    },
+    {
+      "id": "GS-008",
+      "category": "multi_hop",
+      "question": "With the pytest plugin, how do I keep traces only for failed tests, and how do I open such a trace afterwards?",
+      "expected_answer": "Run pytest with --tracing retain-on-failure. Traces are saved as trace.zip under the test-results output directory. Open one with playwright show-trace trace.zip or upload it to trace.playwright.dev.",
+      "must_mention": ["retain-on-failure", "show-trace"],
+      "expected_sources": [
+        {"doc": "test-runners-python", "section": "CLI arguments"},
+        {"doc": "trace-viewer", "section": "Recording a trace"},
+        {"doc": "trace-viewer", "section": "Opening Trace Viewer"}
+      ],
+      "should_refuse": false
+    },
+    {
+      "id": "GS-009",
+      "category": "multi_hop",
+      "question": "My tests share one browser. How does Playwright stop cookies from one test leaking into another, and how do I get a second isolated context inside one pytest test?",
+      "expected_answer": "Each test runs in its own browser context, an incognito-like profile with its own cookies, local storage and session storage, so state does not leak between tests. In the pytest plugin, the new_context fixture creates additional browser contexts in one test, which is useful for multi-user scenarios.",
+      "must_mention": ["context", "new_context"],
+      "expected_sources": [
+        {"doc": "browser-contexts", "section": "What is Test Isolation?"},
+        {"doc": "test-runners-python", "section": "Fixtures"}
+      ],
+      "should_refuse": false
+    },
+    {
+      "id": "GS-010",
+      "category": "paraphrase",
+      "paraphrase_of": "GS-002",
+      "question": "If a confirm() popup appears and I have no dialog handler, does Playwright accept it or close it?",
+      "expected_answer": "It dismisses it. Without a page.on(\"dialog\") listener, all dialogs are automatically dismissed.",
+      "must_mention": ["dismiss"],
+      "expected_sources": [{"doc": "dialogs", "section": "alert(), confirm(), prompt() dialogs"}],
+      "should_refuse": false
+    },
+    {
+      "id": "GS-011",
+      "category": "typo",
+      "question": "how to blok all png and jpg imgs with page.rout?",
+      "expected_answer": "Use page.route with a glob pattern and abort the route: page.route(\"**/*.{png,jpg,jpeg}\", lambda route: route.abort()).",
+      "must_mention": ["route.abort"],
+      "expected_sources": [{"doc": "network", "section": "Abort requests"}],
+      "should_refuse": false
+    },
+    {
+      "id": "GS-012",
+      "category": "out_of_scope",
+      "question": "How do I configure test retries in Cypress?",
+      "expected_answer": "The bot should refuse: the corpus covers Playwright only.",
+      "must_mention": [],
+      "expected_sources": [],
+      "should_refuse": true
+    }
+  ]
+}
